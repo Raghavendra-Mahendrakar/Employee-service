@@ -28,10 +28,7 @@ public interface EmployeeService {
     
     UserBasicDetailsDTO getUserBasicInfoAfterLoginSuccess(String  email) throws PWSException;
 
-
     //Skill Services
-
-
     public Page<Skill> fetchAllSkills(int offset,int pageSize, String field) throws PWSException;
 
 	
@@ -46,8 +43,6 @@ public interface EmployeeService {
 	List<Skill> fetchAllSkillsByFlag(Boolean flag) throws PWSException;
 	
 	public Page<Skill> fetchAllUserSkills(int page,int pageSize, String sort, String order, Integer id)throws PWSException;
-	
-
 
 	void deactivateOrActivateSkillUserXref(Integer id, Boolean flag) throws PWSException;
 
@@ -55,11 +50,5 @@ public interface EmployeeService {
 //    void updateRole(Role role) throws PWSException;
 //
 //    List<Role> fetchAllRole() throws PWSException;
-
-   
-
-
-	
-
 
 }

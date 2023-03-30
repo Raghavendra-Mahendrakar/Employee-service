@@ -27,39 +27,38 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_skill_xref")
-public class UserSkillXref extends AuditModel implements Serializable{
+public class UserSkillXref extends AuditModel implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
 
-	@ManyToOne
-	@JoinColumn(name="user_id")
-	private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-	@ManyToOne
-	@JoinColumn(name="skill_id")
-	private Skill skill;
+    @ManyToOne
+    @JoinColumn(name = "skill_id")
+    private Skill skill;
 
-	@Enumerated(EnumType.STRING)
-	@NotNull
-	@Column(name="proficiency_level",nullable=false)
-	private Keyword  proficiencyevel;
-	public enum Keyword {
-	    Beginner, Intermediate, Expert
-	}
-	
-	@Column(name="is_active",nullable=false)
-	@ColumnDefault("TRUE")
-	private Boolean isActive;
-	
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(name = "proficiency_level", nullable = false)
+    private Keyword proficiencyevel;
 
-	
-	
+    public enum Keyword {
+        Beginner, Intermediate, Expert
+    }
+
+    @Column(name = "is_active", nullable = false)
+    @ColumnDefault("TRUE")
+    private Boolean isActive;
+
+
 }

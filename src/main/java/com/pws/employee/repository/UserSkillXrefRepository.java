@@ -12,21 +12,20 @@ import com.pws.employee.entity.UserSkillXref;
 import com.pws.employee.exception.config.PWSException;
 
 public interface UserSkillXrefRepository extends JpaRepository<UserSkillXref, Integer> {
-   
-	
-	@Query("select o.skill from UserSkillXref o where o.skill.IsActive=TRUE")
+
+
+    @Query("select o.skill from UserSkillXref o where o.skill.IsActive=TRUE")
     List<Skill> fetchAllActiveSkills();
-	
-	@Query("select o.skill from UserSkillXref o where o.skill.IsActive= :flag")
+
+    @Query("select o.skill from UserSkillXref o where o.skill.IsActive= :flag")
     List<Skill> fetchAllSkillsByFlag(Boolean flag);
 
 
-	@Query("select o.skill from UserSkillXref o where o.user.id= :id")
-	List<Skill> fetchuserSkillsByid(int id);
-	
-	@Query("select o.skill from UserSkillXref o where o.user.id= :id ")
-	Page<Skill> fetchAllUserSkills(Pageable pageable, Integer id);
+    @Query("select o.skill from UserSkillXref o where o.user.id= :id")
+    List<Skill> fetchuserSkillsByid(int id);
 
+    @Query("select o.skill from UserSkillXref o where o.user.id= :id ")
+    Page<Skill> fetchAllUserSkills(Pageable pageable, Integer id);
 
 
 }

@@ -40,139 +40,141 @@ import com.pws.employee.utility.DateUtils;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
-	private RoleRepository roleRepository;
-	
+    @Autowired
+    private UserRepository userRepository;
 
-	@Autowired
-	private SkillRepository skillRepository;
-	
-	
-	@Autowired
-	private UserRoleXrefRepository userRoleXrefRepository;
-
-	@Autowired
-	private UserSkillXrefRepository userSkillXrefRepository;
-
-	@Autowired
-	private PermissionRepository permissionRepository;
-
-	@Override
-	public void UserSignUp(SignUpDTO signupDTO) throws PWSException {
-
-		Optional<User> optionalUser = userRepository.findUserByEmail(signupDTO.getEmail());
-		if (optionalUser.isPresent())
-			throw new PWSException("User Already Exist with Email : " + signupDTO.getEmail());
-		User user = new User();
-		user.setDateOfBirth(DateUtils.getUtilDateFromString(signupDTO.getDateOfBirth()));
-		user.setFirstName(signupDTO.getFirstName());
-		user.setIsActive(true);
-		user.setLastName(signupDTO.getLastName());
-		user.setEmail(signupDTO.getEmail());
-		user.setPhoneNumber(signupDTO.getPhoneNumber());
-		PasswordEncoder encoder = new BCryptPasswordEncoder(8);
-		// Set new password
-		user.setPassword(encoder.encode(signupDTO.getPassword()));
-		userRepository.save(user);
-
-		Optional<Role> optionalRole = roleRepository.findByRolename(signupDTO.getRoleName());
-		Role role = optionalRole.get();
-		UserRoleXref userRole= new UserRoleXref();
-		userRole.setRole(role);
-		userRole.setUser(user);
-		userRole.setIsActive(true);
-		userRoleXrefRepository.save(userRole);
+    @Autowired
+    private RoleRepository roleRepository;
 
 
-	}
-
-	@Override
-	public void updateUserPassword(UpdatePasswordDTO userPasswordDTO) throws PWSException {
-		Optional<User> optionalUser = userRepository.findUserByEmail(userPasswordDTO.getUserEmail());
-
-		PasswordEncoder encoder = new BCryptPasswordEncoder();
-		User user = null;
-		if (!optionalUser.isPresent()) {
-			throw new PWSException("User Not present ");
-		}
-		user = optionalUser.get();
-		if (encoder.matches(userPasswordDTO.getOldPassword(), user.getPassword())) {
-			if (userPasswordDTO.getNewPassword().equals(userPasswordDTO.getConfirmNewPassword())) {
-
-				user.setPassword(encoder.encode(userPasswordDTO.getConfirmNewPassword()));
-				userRepository.save(user);
-			} else {
-				throw new PWSException("new password and confirm password doesnot match ");
-			}
-
-		} else {
-			throw new PWSException("oldpassword not matched");
-		}
-
-	}
+    @Autowired
+    private SkillRepository skillRepository;
 
 
-	@Override
-	public UserBasicDetailsDTO getUserBasicInfoAfterLoginSuccess(String email) throws PWSException {
-	    Optional<User> optionalUser = userRepository.findUserByEmail(email);
-	    if(! optionalUser.isPresent())
-	        throw new PWSException("User Already Exist with Email : " + email);
+    @Autowired
+    private UserRoleXrefRepository userRoleXrefRepository;
+
+    @Autowired
+    private UserSkillXrefRepository userSkillXrefRepository;
+
+    public EmployeeServiceImpl(UserSkillXrefRepository userSkillXrefRepository) {
+        this.userSkillXrefRepository = userSkillXrefRepository;
+    }
+
+    @Autowired
+    private PermissionRepository permissionRepository;
+
+    @Override
+    public void UserSignUp(SignUpDTO signupDTO) throws PWSException {
+
+        Optional<User> optionalUser = userRepository.findUserByEmail(signupDTO.getEmail());
+        if (optionalUser.isPresent())
+            throw new PWSException("User Already Exist with Email : " + signupDTO.getEmail());
+        User user = new User();
+        user.setDateOfBirth(DateUtils.getUtilDateFromString(signupDTO.getDateOfBirth()));
+        user.setFirstName(signupDTO.getFirstName());
+        user.setIsActive(true);
+        user.setLastName(signupDTO.getLastName());
+        user.setEmail(signupDTO.getEmail());
+        user.setPhoneNumber(signupDTO.getPhoneNumber());
+        PasswordEncoder encoder = new BCryptPasswordEncoder(8);
+        // Set new password
+        user.setPassword(encoder.encode(signupDTO.getPassword()));
+        userRepository.save(user);
+
+        Optional<Role> optionalRole = roleRepository.findByRolename(signupDTO.getRoleName());
+        Role role = optionalRole.get();
+        UserRoleXref userRole = new UserRoleXref();
+        userRole.setRole(role);
+        userRole.setUser(user);
+        userRole.setIsActive(true);
+        userRoleXrefRepository.save(userRole);
 
 
-	    User user = optionalUser.get();
-	    UserBasicDetailsDTO userBasicDetailsDTO =new UserBasicDetailsDTO();
-	    userBasicDetailsDTO.setUser(user);
+    }
 
-	    List<Role> roleList = userRoleXrefRepository.findAllUserRoleByUserId(user.getId());
-	    userBasicDetailsDTO.setRoleList(roleList);
-	    List<Permission> permissionList =null;
-	    if(roleList.size()>0)
-	     permissionList = permissionRepository.getAllUserPermisonsByRoleId(roleList.get(0).getId());
+    @Override
+    public void updateUserPassword(UpdatePasswordDTO userPasswordDTO) throws PWSException {
+        Optional<User> optionalUser = userRepository.findUserByEmail(userPasswordDTO.getUserEmail());
 
-	    userBasicDetailsDTO.setPermissionList(permissionList);
-	    List<Skill> skilllist = userSkillXrefRepository.fetchuserSkillsByid(user.getId());
-	    userBasicDetailsDTO.setSkilllist(skilllist);
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        User user = null;
+        if (!optionalUser.isPresent()) {
+            throw new PWSException("User Not present ");
+        }
+        user = optionalUser.get();
+        if (encoder.matches(userPasswordDTO.getOldPassword(), user.getPassword())) {
+            if (userPasswordDTO.getNewPassword().equals(userPasswordDTO.getConfirmNewPassword())) {
 
-	    
-	    return userBasicDetailsDTO;
-	}
+                user.setPassword(encoder.encode(userPasswordDTO.getConfirmNewPassword()));
+                userRepository.save(user);
+            } else {
+                throw new PWSException("new password and confirm password doesnot match ");
+            }
 
-	@Override
-	public Page<Skill> fetchAllSkills(int offset,int pageSize, String field)throws PWSException {
+        } else {
+            throw new PWSException("oldpassword not matched");
+        }
+
+    }
+
+
+    @Override
+    public UserBasicDetailsDTO getUserBasicInfoAfterLoginSuccess(String email) throws PWSException {
+        Optional<User> optionalUser = userRepository.findUserByEmail(email);
+        if (!optionalUser.isPresent())
+            throw new PWSException("User Already Exist with Email : " + email);
+
+
+        User user = optionalUser.get();
+        UserBasicDetailsDTO userBasicDetailsDTO = new UserBasicDetailsDTO();
+        userBasicDetailsDTO.setUser(user);
+
+        List<Role> roleList = userRoleXrefRepository.findAllUserRoleByUserId(user.getId());
+        userBasicDetailsDTO.setRoleList(roleList);
+        List<Permission> permissionList = null;
+        if (roleList.size() > 0)
+            permissionList = permissionRepository.getAllUserPermisonsByRoleId(roleList.get(0).getId());
+
+        userBasicDetailsDTO.setPermissionList(permissionList);
+        List<Skill> skilllist = userSkillXrefRepository.fetchuserSkillsByid(user.getId());
+        userBasicDetailsDTO.setSkilllist(skilllist);
+
+        return userBasicDetailsDTO;
+    }
+
+    @Override
+    public Page<Skill> fetchAllSkills(int offset, int pageSize, String field) throws PWSException {
         return skillRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(field)));
     }
-    
-	@Override
-	public Page<Skill> fetchAllUserSkills(int page,int pageSize, String sort, String order, Integer id)throws PWSException {
-		Pageable pageable=CommonUtils.getPageable(page, pageSize, sort, order);
-        return userSkillXrefRepository.fetchAllUserSkills(pageable,id);
+
+    @Override
+    public Page<Skill> fetchAllUserSkills(int page, int pageSize, String sort, String order, Integer id) throws PWSException {
+        Pageable pageable = CommonUtils.getPageable(page, pageSize, sort, order);
+        return userSkillXrefRepository.fetchAllUserSkills(pageable, id);
     }
-	
+
     @Override
     public Optional<Skill> fetchAllSkillsByid(Integer id) throws PWSException {
         Optional<Skill> skillbyid = skillRepository.findById(id);
         if (skillbyid.isPresent()) {
-        return    skillRepository.findById(id);
-        }
-        else {
+            return skillRepository.findById(id);
+        } else {
             throw new PWSException("Id not found");
         }
     }
-    
+
     @Override
     public List<Skill> fetchAllActiveSkills() throws PWSException {
-        return  userSkillXrefRepository.fetchAllActiveSkills();
-        }
-        
+        return userSkillXrefRepository.fetchAllActiveSkills();
+    }
+
     @Override
     public List<Skill> fetchAllSkillsByFlag(Boolean flag) throws PWSException {
-        return  userSkillXrefRepository.fetchAllSkillsByFlag(flag);
-        }
-    
-    
+        return userSkillXrefRepository.fetchAllSkillsByFlag(flag);
+    }
+
+
     @Override
     public void addSkillToUser(UserSkillXrefDTO userSkillXrefDTO) throws PWSException {
         UserSkillXref userSkillXref = new UserSkillXref();
@@ -188,56 +190,53 @@ public class EmployeeServiceImpl implements EmployeeService {
         } else {
             throw new PWSException("skill Doest Exist");
         }
-        
+
         userSkillXref.setProficiencyevel(userSkillXrefDTO.getSkilllevel());
         userSkillXref.setIsActive(userSkillXrefDTO.getIsActive());
 
         userSkillXrefRepository.save(userSkillXref);
     }
 
-    
+
     @Override
     public void saveOrUpdateskilluserXref(UserSkillXrefDTO userSkillXrefDTO) throws PWSException {
-        Optional<UserSkillXref> optskill= userSkillXrefRepository.findById(userSkillXrefDTO.getId());
+        Optional<UserSkillXref> optskill = userSkillXrefRepository.findById(userSkillXrefDTO.getId());
         UserSkillXref userSkillXref = null;
-        if(optskill.isPresent()) {
-        	userSkillXref=optskill.get();
-        }else {
-        	userSkillXref=new UserSkillXref();
+        if (optskill.isPresent()) {
+            userSkillXref = optskill.get();
+        } else {
+            userSkillXref = new UserSkillXref();
         }
         Optional<User> optionalUser = userRepository.findById(userSkillXrefDTO.getUserId());
         if (optionalUser.isPresent()) {
-        	userSkillXref.setUser(optionalUser.get());
+            userSkillXref.setUser(optionalUser.get());
         } else {
             throw new PWSException("User Doest Exist");
         }
         Optional<Skill> optionalskill = skillRepository.findById(userSkillXrefDTO.getSkillId());
         if (optionalskill.isPresent()) {
-        	userSkillXref.setSkill(optionalskill.get());
+            userSkillXref.setSkill(optionalskill.get());
         } else {
             throw new PWSException("skill Doest Exist");
         }
-        
-         userSkillXref.setProficiencyevel(userSkillXrefDTO.getSkilllevel());
-         userSkillXref.setIsActive(userSkillXrefDTO.getIsActive());
-         
 
-        
+        userSkillXref.setProficiencyevel(userSkillXrefDTO.getSkilllevel());
+        userSkillXref.setIsActive(userSkillXrefDTO.getIsActive());
+
+
         userSkillXrefRepository.save(userSkillXref);
     }
-    
+
     @Override
     public void deactivateOrActivateSkillUserXref(Integer id, Boolean flag) throws PWSException {
         Optional<UserSkillXref> optionalUserRoleXref = userSkillXrefRepository.findById(id);
         UserSkillXref userSkillXref = optionalUserRoleXref.get();
         if (optionalUserRoleXref.isPresent()) {
-        	userSkillXref.setIsActive(flag);
+            userSkillXref.setIsActive(flag);
             userSkillXrefRepository.save(userSkillXref);
         } else
             throw new PWSException("data Doest Exist");
     }
-    
-    
 
 
 }

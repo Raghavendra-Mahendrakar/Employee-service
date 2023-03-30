@@ -54,16 +54,33 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RequestMapping("/")
 
 public class EmployeeController {
-	
-	
-	
+
 	@Autowired
 	private JwtUtil jwtUtil;
-	  @Autowired
-	    private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private EmployeeService employeeService;
+	@Autowired
+	private AuthenticationManager authenticationManager;
+
+	@Autowired
+	private EmployeeService employeeService;
+
+	public EmployeeController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+	}
+
+	@Operation(summary = "Add Skill To User")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Skill Added Successfully",
+					content = { @Content(mediaType = "application/json"
+					) }),
+			@ApiResponse(responseCode = "400", description = "Bad Request",
+					content = @Content),
+			@ApiResponse(responseCode = "404", description = " Not found",
+					content = @Content) })
+	@PostMapping("private/skill/add/to/user")
+	public ResponseEntity<Object> addSkillToUser(@RequestBody UserSkillXrefDTO userSkillXrefDTO) throws PWSException {
+		employeeService.addSkillToUser(userSkillXrefDTO);
+		return CommonUtils.buildResponseEntity(new ApiSuccess(HttpStatus.OK));
+	}
 
 	@Operation(summary = "SignUp")
 	@ApiResponses(value = {
@@ -91,7 +108,7 @@ public class EmployeeController {
 	@PostMapping("/authenticate")
 	public String generateToken(@RequestBody LoginDTO loginDTO) throws PWSException  {
 		try {
-			
+
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUserName(),loginDTO.getPassword())
 					);
 		} catch (Exception ex) {
@@ -217,21 +234,6 @@ public class EmployeeController {
     }
 
 
-	@Operation(summary = "Add Skill To User")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Skill Added Successfully",
-					content = { @Content(mediaType = "application/json"
-					) }),
-			@ApiResponse(responseCode = "400", description = "Bad Request",
-					content = @Content),
-			@ApiResponse(responseCode = "404", description = " Not found",
-					content = @Content) })
-    @PostMapping("private/skill/add/to/user")
-    public ResponseEntity<Object> addSkillToUser(@RequestBody UserSkillXrefDTO userSkillXrefDTO) throws PWSException {
-        employeeService.addSkillToUser(userSkillXrefDTO);
-        return CommonUtils.buildResponseEntity(new ApiSuccess(HttpStatus.OK));
-    }
-
 
 
 	@Operation(summary = "Save Or Update UserSkillXref")
@@ -263,9 +265,4 @@ public class EmployeeController {
     	employeeService.deactivateOrActivateSkillUserXref(id, flag);
         return CommonUtils.buildResponseEntity(new ApiSuccess(HttpStatus.OK));
     }
-    
-    
-
-    
-    
 }

@@ -28,8 +28,5 @@ public class UserBasicDetailsDTO {
     private List<Permission> permissionList;
 
     private List<Skill> skilllist;
-    
-    
 
-   
 }
