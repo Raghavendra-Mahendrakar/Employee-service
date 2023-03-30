@@ -21,17 +21,12 @@ public interface UserRoleXrefRepository extends JpaRepository<UserRoleXref, Inte
 
     @Query("select o.user from UserRoleXref o where o.role.id= :roleId")
     List<User> fetchAllUsersByRoleId(Integer roleId);
-    
+
 
     @Query("select o.role from UserRoleXref o where o.user.id= :id and o.role.IsActive=TRUE")
     List<Role> findAllUserRoleByUserId(Integer id);
-    
+
     @Query("select o.role from UserRoleXref o where o.role.name= :role")
-	Optional<Role> findByRole(String role);
+    Optional<Role> findByRole(String role);
 
-
-
-
-
-    
 }

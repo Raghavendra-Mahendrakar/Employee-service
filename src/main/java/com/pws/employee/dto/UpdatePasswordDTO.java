@@ -12,14 +12,15 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Update Password Request")
 
 public class UpdatePasswordDTO {
-	@Schema(description = "Enter User Email",example = "Arya@gfmail.com",required = true)
+	@Schema(description = "Enter User Email",example = "Arya@gmail.com",required = true)
 	private String userEmail;
 
-	@Schema(description = "Enter Old Password",example = "Arya@123",required = true)
+	@Schema(description = "Enter Old Password",example = "Arya@1234",required = true)
 	private String oldPassword;
 
-	@Schema(description = "Enter New Password",example = "Arya@gf123",required = true)
+	@Schema(description = "Enter New Password",example = "Arya@123",required = true)
 	private String newPassword;
-	
+
+	@Schema(description = "Enter New Password",example = "Arya@123",required = true)
 	private String confirmNewPassword;
 }

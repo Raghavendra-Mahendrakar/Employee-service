@@ -16,8 +16,8 @@ import com.pws.employee.entity.User;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Integer> {
-	
-	@Query("select o from Role o where o.name = :rolename")
+
+    @Query("select o from Role o where o.name = :rolename")
     Optional<Role> findByRolename(String rolename);
 
 }
